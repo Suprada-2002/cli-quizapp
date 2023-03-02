@@ -1,0 +1,151 @@
+#!/usr/bin/env node
+
+import chalk from 'chalk';
+import chalkAnimation from 'chalk-animation';
+import inquirer from 'inquirer';
+import { createSpinner } from 'nanospinner';
+import figlet from 'figlet';
+import gradient from 'gradient-string';
+
+let playerName;
+
+const sleep = (ms = 400)=> new Promise((r) => 
+setTimeout(r,ms));
+
+async function welcome(){
+    const title = chalkAnimation.rainbow(
+        'Who wants to play a game?'
+    );
+
+    await sleep();
+    title.stop();
+
+    console.log(`
+    ${chalk.bgBlue('HOW TO PLAY')}
+    This is a simple quiz Game.
+    Just answer the following question to test your knowledge..
+    `);
+}
+
+async function askName() {
+    const answer = await inquirer.prompt({
+        name:'player_name',
+        type:'input',
+        message:'What is your name?',
+        default(){
+            return 'Player';
+        },
+    });
+    playerName = answer.player_name;
+    console.log(`
+    Hello ${chalk.yellow(playerName)}, Let's Play.
+    Here are your Questions.. \n`)
+}
+
+async function handleAnswer(isCorrect){
+    const spinner = createSpinner('Checking answer...').start();
+    await sleep();
+
+    if(isCorrect){
+        spinner.success({ text: `Nice Work ${playerName}. That's Correct.\n`});
+    }else{
+        spinner.error({text: `Game over, you lose ${playerName}`});
+        process.exit(1);
+    }
+}
+
+async function winner(){
+  console.clear();
+  figlet(`Congrats , ${playerName} !\n You Won`, (err, data) => {
+    console.log(gradient.pastel.multiline(data) + '\n');
+
+    console.log(
+        chalk.green('Lean More and Grow More'+'\n')
+    );
+    process.exit(0);0
+  });
+}
+
+async function question1(){
+    const answer = await inquirer.prompt({
+        name:'question_1',
+        type:'list',
+        message:'What is the capital of India?',
+        choices:[
+            'Afganistan',
+            'New Delhi',
+            'America',
+            'Noida'
+        ]
+    });
+    return handleAnswer( answer.question_1 === 'New Delhi')
+}
+
+async function question2(){
+    const answer = await inquirer.prompt({
+        name:'question_2',
+        type:'list',
+        message:'How many bones are there the ear?',
+        choices:[
+            '9',
+            '4',
+            '3',
+            '1'
+        ]
+    });
+    return handleAnswer( answer.question_2 === '3')
+}
+
+async function question3(){
+    const answer = await inquirer.prompt({
+        name:'question_3',
+        type:'list',
+        message:'Largest Moon in our Solar System ?',
+        choices:[
+            'Titan',
+            'Ganymede',
+            'Callisto',
+            'Triton'
+        ]
+    });
+    return handleAnswer( answer.question_3 === 'Ganymede')
+}
+
+async function question4(){
+    const answer = await inquirer.prompt({
+        name:'question_4',
+        type:'list',
+        message:'The diffrent colors of the stars is due to ?',
+        choices:[
+            'Temprature',
+            'Pressure',
+            'Density',
+            'Radiation from sun'
+        ]
+    });
+    return handleAnswer( answer.question_4 === 'Temprature')
+}
+
+async function question5(){
+    const answer = await inquirer.prompt({
+        name:'question_5',
+        type:'list',
+        message:'Largest Volcanic Mountain in Solar System ?',
+        choices:[
+            'Olympus Mons',
+            'Doom Mons',
+            'Mount Everest',
+            'Maxwell Montes'
+        ]
+    });
+    return handleAnswer( answer.question_5 === 'Olympus Mons')
+}
+
+await welcome();
+await askName();
+await question1();
+await question2();
+await question3();
+await question4();
+await question5();
+await winner();
